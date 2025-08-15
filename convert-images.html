@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to WebP Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .upload-area:hover {
+            border-color: #007bff;
+            background: #f8f9fa;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .preview {
+            max-width: 200px;
+            margin: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .download-link {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 15px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .download-link:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Image to WebP Converter</h1>
+        <p>Upload your JPEG/PNG images to convert them to WebP format for better performance.</p>
+        
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <p>Click here to select images or drag and drop</p>
+            <input type="file" id="fileInput" multiple accept="image/*" style="display: none;" onchange="handleFiles(this.files)">
+        </div>
+        
+        <div id="results"></div>
+        
+        <div style="margin-top: 30px;">
+            <h3>Instructions:</h3>
+            <ol>
+                <li>Upload your images (JPEG/PNG)</li>
+                <li>Click "Convert to WebP" for each image</li>
+                <li>Download the converted WebP files</li>
+                <li>Place them in your images folder</li>
+                <li>Update your HTML to use the picture element with WebP fallbacks</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function handleFiles(files) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        createImageConverter(e.target.result, file.name);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function createImageConverter(dataUrl, fileName) {
+            const resultsDiv = document.getElementById('results');
+            const div = document.createElement('div');
+            div.style.border = '1px solid #ddd';
+            div.style.padding = '15px';
+            div.style.margin = '10px 0';
+            div.style.borderRadius = '8px';
+            
+            const img = document.createElement('img');
+            img.src = dataUrl;
+            img.className = 'preview';
+            
+            const name = document.createElement('p');
+            name.textContent = `File: ${fileName}`;
+            name.style.fontWeight = 'bold';
+            
+            const convertBtn = document.createElement('button');
+            convertBtn.textContent = 'Convert to WebP';
+            convertBtn.className = 'btn';
+            convertBtn.onclick = () => convertToWebP(dataUrl, fileName.replace(/\.[^/.]+$/, '.webp'));
+            
+            div.appendChild(name);
+            div.appendChild(img);
+            div.appendChild(convertBtn);
+            resultsDiv.appendChild(div);
+        }
+
+        function convertToWebP(dataUrl, fileName) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            
+            img.onload = function() {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = fileName;
+                    link.className = 'download-link';
+                    link.textContent = `Download ${fileName}`;
+                    
+                    // Add to the same div as the convert button
+                    const div = link.parentElement;
+                    div.appendChild(link);
+                    
+                    // Disable the convert button
+                    const btn = div.querySelector('button');
+                    btn.disabled = true;
+                    btn.textContent = 'Converted!';
+                    btn.style.background = '#6c757d';
+                }, 'image/webp', 0.8);
+            };
+            
+            img.src = dataUrl;
+        }
+
+        // Drag and drop functionality
+        const uploadArea = document.querySelector('.upload-area');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#007bff';
+            uploadArea.style.background = '#f8f9fa';
+        });
+        
+        uploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#ccc';
+            uploadArea.style.background = 'white';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#ccc';
+            uploadArea.style.background = 'white';
+            handleFiles(e.dataTransfer.files);
+        });
+    </script>
+</body>
+</html>

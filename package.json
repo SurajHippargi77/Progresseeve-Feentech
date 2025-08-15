@@ -1,0 +1,44 @@
+{
+  "name": "progresseeve-feentech-website",
+  "version": "1.0.0",
+  "description": "Modern portfolio website for Progresseeve Feentech - Strategic Debt Recovery & Asset Restructuring Excellence",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "npx serve .",
+    "dev": "npx live-server --port=8000 --ignore=node_modules --ignore=.git --ignore=*.log --ignore=package-lock.json --ignore=yarn.lock",
+    "dev-stable": "npx http-server . -p 8000 -c-1 -o",
+    "build": "echo 'No build process required for static site'",
+    "test": "echo 'No tests specified'"
+  },
+  "keywords": [
+    "portfolio",
+    "debt-recovery",
+    "asset-restructuring",
+    "para-legal",
+    "financial-services",
+    "pune",
+    "maharashtra",
+    "bheema-hippargi"
+  ],
+  "author": "Progresseeve Feentech",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/progresseeve-feentech/website.git"
+  },
+  "homepage": "https://progresseevefeentech.com",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2",
+    "serve": "^14.2.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
