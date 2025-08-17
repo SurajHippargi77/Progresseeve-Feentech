@@ -183,14 +183,6 @@ if (contactForm) {
         submitButton.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
         submitButton.disabled = true;
         
-        // Show success message after a delay
-        setTimeout(() => {
-            showNotification('Thank you! Your message has been sent successfully. We will get back to you within 24 hours.', 'success');
-            this.reset();
-            submitButton.innerHTML = originalText;
-            submitButton.disabled = false;
-        }, 2000);
-        
         // Let FormSubmit handle everything - no validation, no prevention
     });
 }
