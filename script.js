@@ -3,16 +3,16 @@ const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
 
 if (hamburger && navMenu) {
-    hamburger.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        navMenu.classList.toggle('active');
-    });
+hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    navMenu.classList.toggle('active');
+});
 
-    // Close mobile menu when clicking on a link
-    document.querySelectorAll('.nav-link').forEach(n => n.addEventListener('click', () => {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-    }));
+// Close mobile menu when clicking on a link
+document.querySelectorAll('.nav-link').forEach(n => n.addEventListener('click', () => {
+    hamburger.classList.remove('active');
+    navMenu.classList.remove('active');
+}));
 }
 
 // Smooth scrolling for navigation links
@@ -80,7 +80,7 @@ function showNotification(message, type = 'info') {
                   '<i class="fas fa-info-circle"></i>'}
             </div>
             <div class="notification-text">
-                <span class="notification-message">${message}</span>
+            <span class="notification-message">${message}</span>
             </div>
             <button class="notification-close">
                 <i class="fas fa-times"></i>
