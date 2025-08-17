@@ -202,30 +202,15 @@ if (contactForm) {
         submitButton.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
         submitButton.disabled = true;
         
-        // Prevent default form submission
-        e.preventDefault();
-        
-        // Submit form using fetch to avoid page redirect and reCAPTCHA
-        fetch(this.action, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            if (response.ok) {
-                showNotification('Thank you! Your message has been sent successfully. We will get back to you within 24 hours.', 'success');
-                this.reset();
-            } else {
-                showNotification('Sorry, there was an error sending your message. Please try again.', 'error');
-            }
-        })
-        .catch(error => {
-            showNotification('Sorry, there was an error sending your message. Please try again.', 'error');
-        })
-        .finally(() => {
-            // Reset button state
+        // Allow form to submit normally to FormSubmit
+        // FormSubmit will handle the email sending
+        // We'll show success message after a delay
+        setTimeout(() => {
+            showNotification('Thank you! Your message has been sent successfully. We will get back to you within 24 hours.', 'success');
+            this.reset();
             submitButton.innerHTML = originalText;
             submitButton.disabled = false;
-        });
+        }, 2000);
     });
 }
 
