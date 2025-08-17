@@ -1740,8 +1740,8 @@ h1, h2, h3, h4, h5, h6 {
     }
     
     .contact-info {
-        order: -1;
-        margin-bottom: 2rem;
+        order: 1;
+        margin-top: 2rem;
     }
     
     .contact-form {
