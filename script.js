@@ -183,17 +183,22 @@ if (contactForm) {
         submitButton.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
         submitButton.disabled = true;
         
-        // Show success message immediately
-        setTimeout(() => {
-            showNotification('Thank you! Your message has been sent successfully. We will get back to you within 24 hours.', 'success');
-            this.reset();
-            submitButton.innerHTML = originalText;
-            submitButton.disabled = false;
-        }, 1000);
-        
         // Let FormSubmit handle everything - no validation, no prevention
     });
 }
+
+// Check for success parameter on page load
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+    if (success === 'true') {
+        setTimeout(() => {
+            showNotification('Thank you! Your message has been sent successfully. We will get back to you within 24 hours.', 'success');
+        }, 1000);
+        // Clean up the URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+});
 
 
 
