@@ -196,6 +196,9 @@ if (contactForm) {
             return;
         }
         
+        // If validation passes, allow form to submit normally
+        // Don't prevent default - let FormSubmit handle the submission
+        
         // Show loading state
         const submitButton = this.querySelector('button[type="submit"]');
         const originalText = submitButton.innerHTML;
@@ -211,6 +214,9 @@ if (contactForm) {
             submitButton.innerHTML = originalText;
             submitButton.disabled = false;
         }, 2000);
+        
+        // IMPORTANT: Don't prevent default - let the form submit normally
+        // The form will redirect to FormSubmit and send the email
     });
 }
 
