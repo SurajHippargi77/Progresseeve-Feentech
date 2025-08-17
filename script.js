@@ -173,18 +173,17 @@ function createScrollProgress() {
 // Initialize scroll progress
 document.addEventListener('DOMContentLoaded', createScrollProgress);
 
-// Contact form handling
+// Contact form handling - SIMPLE AND RELIABLE
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
     contactForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
         // Get form data
         const formData = new FormData(this);
         const data = Object.fromEntries(formData);
         
         // Basic validation
         if (!data.name || !data.email || !data.message) {
+            e.preventDefault();
             showNotification('Please fill in all required fields.', 'error');
             return;
         }
@@ -192,15 +191,42 @@ if (contactForm) {
         // Email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(data.email)) {
+            e.preventDefault();
             showNotification('Please enter a valid email address.', 'error');
             return;
         }
         
-        // Simulate form submission
-        showNotification('Thank you for your message! We will get back to you soon.', 'success');
-        this.reset();
+        // Show loading state
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        submitButton.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
+        submitButton.disabled = true;
+        
+        // Allow form to submit normally to FormSubmit
+        // FormSubmit will redirect back to the main page
     });
 }
+
+// Check if user just came back from form submission
+document.addEventListener('DOMContentLoaded', () => {
+    // Check if this is a redirect from FormSubmit
+    const referrer = document.referrer;
+    if (referrer && referrer.includes('formsubmit.co')) {
+        // Show success message after a short delay
+        setTimeout(() => {
+            showNotification('Thank you! Your message has been sent successfully. We will get back to you within 24 hours.', 'success');
+        }, 1000);
+    }
+    
+    // Alternative: Check URL parameters for success
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+    if (success === 'true') {
+        setTimeout(() => {
+            showNotification('Thank you! Your message has been sent successfully. We will get back to you within 24 hours.', 'success');
+        }, 1000);
+    }
+});
 
 // Notification system
 function showNotification(message, type = 'info') {
@@ -215,25 +241,39 @@ function showNotification(message, type = 'info') {
     notification.className = `notification notification-${type}`;
     notification.innerHTML = `
         <div class="notification-content">
-            <span class="notification-message">${message}</span>
-            <button class="notification-close">&times;</button>
+            <div class="notification-icon">
+                ${type === 'success' ? '<i class="fas fa-check-circle"></i>' : 
+                  type === 'error' ? '<i class="fas fa-exclamation-circle"></i>' : 
+                  '<i class="fas fa-info-circle"></i>'}
+            </div>
+            <div class="notification-text">
+                <span class="notification-message">${message}</span>
+            </div>
+            <button class="notification-close">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     `;
     
     // Add styles
     notification.style.cssText = `
         position: fixed;
-        top: 100px;
-        right: 20px;
-        background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'};
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-100px);
+        background: ${type === 'success' ? 'linear-gradient(135deg, #F59E0B, #D97706)' : 
+                     type === 'error' ? 'linear-gradient(135deg, #EF4444, #DC2626)' : 
+                     'linear-gradient(135deg, #3B82F6, #2563EB)'};
         color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 5px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        padding: 0;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         z-index: 10000;
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-        max-width: 400px;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        max-width: 500px;
+        width: 90%;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
     `;
     
     // Add to page
@@ -241,24 +281,96 @@ function showNotification(message, type = 'info') {
     
     // Animate in
     setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
+        notification.style.transform = 'translateX(-50%) translateY(0)';
     }, 100);
     
     // Close button functionality
     const closeBtn = notification.querySelector('.notification-close');
     closeBtn.addEventListener('click', () => {
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => notification.remove(), 300);
+        notification.style.transform = 'translateX(-50%) translateY(-100px)';
+        setTimeout(() => notification.remove(), 400);
     });
     
-    // Auto remove after 5 seconds
+    // Auto remove after 6 seconds
     setTimeout(() => {
         if (notification.parentNode) {
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => notification.remove(), 300);
+            notification.style.transform = 'translateX(-50%) translateY(-100px)';
+            setTimeout(() => notification.remove(), 400);
         }
-    }, 5000);
+    }, 6000);
 }
+
+// Add notification content styles
+const notificationStyles = document.createElement('style');
+notificationStyles.textContent = `
+    .notification-content {
+        display: flex;
+        align-items: center;
+        padding: 1.2rem 1.5rem;
+        gap: 15px;
+    }
+    
+    .notification-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+    
+    .notification-text {
+        flex: 1;
+    }
+    
+    .notification-message {
+        font-size: 1rem;
+        font-weight: 500;
+        line-height: 1.4;
+    }
+    
+    .notification-close {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+    
+    .notification-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+    }
+    
+    .notification-close:active {
+        transform: scale(0.95);
+    }
+    
+    @media (max-width: 768px) {
+        .notification {
+            width: 95% !important;
+            max-width: 400px !important;
+        }
+        
+        .notification-content {
+            padding: 1rem 1.2rem;
+            gap: 12px;
+        }
+        
+        .notification-message {
+            font-size: 0.9rem;
+        }
+        
+        .notification-icon {
+            font-size: 1.3rem;
+        }
+    }
+`;
+document.head.appendChild(notificationStyles);
 
 // Logo hover effects
 document.querySelectorAll('.logo-container, .hero-logo-container, .footer-logo-container').forEach(logo => {
@@ -417,15 +529,20 @@ const debouncedScrollHandler = debounce(() => {
 
 window.addEventListener('scroll', debouncedScrollHandler);
 
-// Add loading states to buttons
+// Add loading states to buttons (excluding form submit buttons)
 document.querySelectorAll('.btn').forEach(button => {
     button.addEventListener('click', function(e) {
         if (this.type === 'submit') {
+            // Skip this for form submit buttons as they're handled by the form handler
+            return;
+        }
+        
+        // For non-form buttons, add loading state if needed
+        if (this.classList.contains('loading-btn')) {
             const originalText = this.textContent;
-            this.textContent = 'Sending...';
+            this.textContent = 'Loading...';
             this.disabled = true;
             
-            // Simulate loading
             setTimeout(() => {
                 this.textContent = originalText;
                 this.disabled = false;
