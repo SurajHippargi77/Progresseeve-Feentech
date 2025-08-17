@@ -202,31 +202,34 @@ if (contactForm) {
         submitButton.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
         submitButton.disabled = true;
         
-        // Allow form to submit normally to FormSubmit
-        // FormSubmit will redirect back to the main page
+        // Prevent default form submission
+        e.preventDefault();
+        
+        // Submit form using fetch to avoid page redirect and reCAPTCHA
+        fetch(this.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                showNotification('Thank you! Your message has been sent successfully. We will get back to you within 24 hours.', 'success');
+                this.reset();
+            } else {
+                showNotification('Sorry, there was an error sending your message. Please try again.', 'error');
+            }
+        })
+        .catch(error => {
+            showNotification('Sorry, there was an error sending your message. Please try again.', 'error');
+        })
+        .finally(() => {
+            // Reset button state
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        });
     });
 }
 
-// Check if user just came back from form submission
-document.addEventListener('DOMContentLoaded', () => {
-    // Check if this is a redirect from FormSubmit
-    const referrer = document.referrer;
-    if (referrer && referrer.includes('formsubmit.co')) {
-        // Show success message after a short delay
-        setTimeout(() => {
-            showNotification('Thank you! Your message has been sent successfully. We will get back to you within 24 hours.', 'success');
-        }, 1000);
-    }
-    
-    // Alternative: Check URL parameters for success
-    const urlParams = new URLSearchParams(window.location.search);
-    const success = urlParams.get('success');
-    if (success === 'true') {
-        setTimeout(() => {
-            showNotification('Thank you! Your message has been sent successfully. We will get back to you within 24 hours.', 'success');
-        }, 1000);
-    }
-});
+
 
 // Notification system
 function showNotification(message, type = 'info') {
