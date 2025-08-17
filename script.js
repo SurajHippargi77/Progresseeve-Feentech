@@ -47,11 +47,17 @@ if (contactForm) {
 
 // Check if we're coming back from form submission
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if we came from FormSubmit (referrer check)
-    if (document.referrer.includes('formsubmit.co')) {
+    // Check URL parameters for success
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+    
+    if (success === 'true') {
         setTimeout(() => {
             showNotification('Thank you! Your message has been sent successfully. We will get back to you within 24 hours.', 'success');
         }, 1000);
+        
+        // Clean up the URL
+        window.history.replaceState({}, document.title, window.location.pathname);
     }
 });
 
