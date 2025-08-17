@@ -8,6 +8,158 @@ if (contactForm) {
         submitButton.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
         submitButton.disabled = true;
         
-        // Let FormSubmit handle everything - no validation, no prevention, no popup
+        // Show success popup after a delay
+        setTimeout(() => {
+            showNotification('Thank you! Your message has been sent successfully. We will get back to you within 24 hours.', 'success');
+            this.reset();
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        }, 2000);
+        
+        // Let FormSubmit handle everything - no validation, no prevention
     });
-} 
+}
+
+// Notification system
+function showNotification(message, type = 'info') {
+    // Remove existing notifications
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <div class="notification-icon">
+                ${type === 'success' ? '<i class="fas fa-check-circle"></i>' : 
+                  type === 'error' ? '<i class="fas fa-exclamation-circle"></i>' : 
+                  '<i class="fas fa-info-circle"></i>'}
+            </div>
+            <div class="notification-text">
+                <span class="notification-message">${message}</span>
+            </div>
+            <button class="notification-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    
+    // Add styles
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-100px);
+        background: ${type === 'success' ? 'linear-gradient(135deg, #F59E0B, #D97706)' : 
+                     type === 'error' ? 'linear-gradient(135deg, #EF4444, #DC2626)' : 
+                     'linear-gradient(135deg, #3B82F6, #2563EB)'};
+        color: white;
+        padding: 0;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        z-index: 10000;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        max-width: 500px;
+        width: 90%;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.style.transform = 'translateX(-50%) translateY(0)';
+    }, 100);
+    
+    // Close button functionality
+    const closeBtn = notification.querySelector('.notification-close');
+    closeBtn.addEventListener('click', () => {
+        notification.style.transform = 'translateX(-50%) translateY(-100px)';
+        setTimeout(() => notification.remove(), 400);
+    });
+    
+    // Auto remove after 6 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.transform = 'translateX(-50%) translateY(-100px)';
+            setTimeout(() => notification.remove(), 400);
+        }
+    }, 6000);
+}
+
+// Add notification content styles
+const notificationStyles = document.createElement('style');
+notificationStyles.textContent = `
+    .notification-content {
+        display: flex;
+        align-items: center;
+        padding: 1.2rem 1.5rem;
+        gap: 15px;
+    }
+    
+    .notification-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+    
+    .notification-text {
+        flex: 1;
+    }
+    
+    .notification-message {
+        font-size: 1rem;
+        font-weight: 500;
+        line-height: 1.4;
+    }
+    
+    .notification-close {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+    
+    .notification-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+    }
+    
+    .notification-close:active {
+        transform: scale(0.95);
+    }
+    
+    @media (max-width: 768px) {
+        .notification {
+            width: 95% !important;
+            max-width: 400px !important;
+        }
+        
+        .notification-content {
+            padding: 1rem 1.2rem;
+            gap: 12px;
+        }
+        
+        .notification-message {
+            font-size: 0.9rem;
+        }
+        
+        .notification-icon {
+            font-size: 1.3rem;
+        }
+    }
+`;
+document.head.appendChild(notificationStyles); 
