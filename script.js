@@ -40,20 +40,17 @@ if (contactForm) {
         submitButton.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
         submitButton.disabled = true;
         
-        // Let FormSubmit handle everything - NO VALIDATION, NO PREVENTION
-        // Form will redirect to main page after submission
-    });
-}
-
-// Check if we're coming back from form submission
-document.addEventListener('DOMContentLoaded', () => {
-    // Check if we came from FormSubmit (referrer check)
-    if (document.referrer.includes('formsubmit.co')) {
+        // Show success popup after a delay
         setTimeout(() => {
             showNotification('Thank you! Your message has been sent successfully. We will get back to you within 24 hours.', 'success');
-        }, 1000);
-    }
-});
+            this.reset();
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        }, 2000);
+        
+        // Let FormSubmit handle everything - NO VALIDATION, NO PREVENTION
+    });
+}
 
 // Notification system
 function showNotification(message, type = 'info') {
