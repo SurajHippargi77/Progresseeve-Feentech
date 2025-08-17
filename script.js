@@ -177,46 +177,21 @@ document.addEventListener('DOMContentLoaded', createScrollProgress);
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
     contactForm.addEventListener('submit', function(e) {
-        // Get form data
-        const formData = new FormData(this);
-        const data = Object.fromEntries(formData);
-        
-        // Basic validation
-        if (!data.name || !data.email || !data.message) {
-            e.preventDefault();
-            showNotification('Please fill in all required fields.', 'error');
-            return;
-        }
-        
-        // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(data.email)) {
-            e.preventDefault();
-            showNotification('Please enter a valid email address.', 'error');
-            return;
-        }
-        
-        // If validation passes, allow form to submit normally
-        // Don't prevent default - let FormSubmit handle the submission
-        
         // Show loading state
         const submitButton = this.querySelector('button[type="submit"]');
         const originalText = submitButton.innerHTML;
         submitButton.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
         submitButton.disabled = true;
         
-        // Allow form to submit normally to FormSubmit
-        // FormSubmit will handle the email sending
-        // We'll show success message after a delay
+        // Show success message immediately
         setTimeout(() => {
             showNotification('Thank you! Your message has been sent successfully. We will get back to you within 24 hours.', 'success');
             this.reset();
             submitButton.innerHTML = originalText;
             submitButton.disabled = false;
-        }, 2000);
+        }, 1000);
         
-        // IMPORTANT: Don't prevent default - let the form submit normally
-        // The form will redirect to FormSubmit and send the email
+        // Let FormSubmit handle everything - no validation, no prevention
     });
 }
 
